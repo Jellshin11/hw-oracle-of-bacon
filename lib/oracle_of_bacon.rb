@@ -19,12 +19,24 @@ class OracleOfBacon
   validates_presence_of :api_key
   validate :from_does_not_equal_to
 
+  DEFAULT_CONNECTION = 'Kevin Bacon'
+  NTWORK_ERRORS = [
+    Timeout::Error,
+    Errno::EINVAL,
+    Errno::ECONNRESET,
+    EOFError,
+    Net::HTTPHeaderSyntaxError,
+    Net::HTTPBadResponse,
+    Net::ProtocolError
+  ]
+
   def from_does_not_equal_to
-    # YOUR CODE HERE
+    errors.add(:to,'') if from == to 
   end
 
   def initialize(api_key='')
-    # your code here
+    @api_key = api_key
+    @from = 
   end
 
   def find_connections
