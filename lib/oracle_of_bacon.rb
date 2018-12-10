@@ -20,7 +20,7 @@ class OracleOfBacon
   validate :from_does_not_equal_to
 
   DEFAULT_CONNECTION = 'Kevin Bacon'
-  NTWORK_ERRORS = [
+  NETWORK_ERRORS = [
     Timeout::Error,
     Errno::EINVAL,
     Errno::ECONNRESET,
@@ -43,19 +43,14 @@ class OracleOfBacon
     make_uri_from_arguments
     begin
       xml = URI.parse(uri).read
-    rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError,
-      Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError,
-      Net::ProtocolError => e
-      # convert all of these into a generic OracleOfBacon::NetworkError,
-      #  but keep the original error message
-      # your code here
+    rescue *NETWORK_ERRORS => e
+       raise NetworkError, e
     end
-    # your code here: create the OracleOfBacon::Response object
+    @response = Response.new(xml)
   end
 
   def make_uri_from_arguments
-    # your code here: set the @uri attribute to properly-escaped URI
-    #   constructed from the @from, @to, @api_key arguments
+    @uri="http://oracleofbaconorg/cgi-bin/xml?p=#{scaped_api_key}&a=#{scaped_from}&b=#{scaped_to}"
   end
       
   class Response
@@ -71,11 +66,15 @@ class OracleOfBacon
     def parse_response
       if ! @doc.xpath('/error').empty?
         parse_error_response
-      # your code here: 'elsif' clauses to handle other responses
-      # for responses not matching the 3 basic types, the Response
-      # object should have type 'unknown' and data 'unknown response'         
+      elsif !@doc.xpath('/link').empty?
+        parse_graph_response
+      elsif !@doc.xpath('/spellcheck').empty?
+        parse_spellcheck_response
+      else
+        parse_unknown_response
       end
     end
+
     def parse_error_response
       @type = :error
       @data = 'Unauthorized access'
