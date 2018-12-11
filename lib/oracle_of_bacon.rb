@@ -31,12 +31,15 @@ class OracleOfBacon
   ]
 
   def from_does_not_equal_to
-    errors.add(:to,'') if from == to 
+    errors.add(:to,'from no puede ser igual a to') if from == to 
   end
 
   def initialize(api_key='')
     @api_key = api_key
-    @from = 
+    @from = DEFAULT_CONNECTION
+    @to= DEFAULT_CONNECTION
+    @uri=nil
+    @response= nil
   end
 
   def find_connections
@@ -44,7 +47,7 @@ class OracleOfBacon
     begin
       xml = URI.parse(uri).read
     rescue *NETWORK_ERRORS => e
-       raise NetworkError, e
+       raise NetworkError, e.message
     end
     @response = Response.new(xml)
   end
@@ -78,6 +81,38 @@ class OracleOfBacon
     def parse_error_response
       @type = :error
       @data = 'Unauthorized access'
+    end
+
+    def parse_graph_response
+      @type = :graph
+      @data = actors.zip(movies).flatten.compact.map(&:text)
+    end
+
+    def parse_spellcheck_response
+      @type = :spellcheck
+      @data = @doc.xpath('//match').map(&:text)
+    end
+
+    def parse_unknown_response
+      @type = :unknown
+      @data = 'Unknown response'
+    end
+
+    def actors
+      @doc.xpath('//actor')
+    end
+
+    def movies
+      @doc.xpath('//movie')
+    end
+  end
+
+  private
+
+  # Scapes all params passed to Oracle of Bacon service
+  %w[api_key from to].each do |param|
+    define_method "scaped_#{param}" do
+      CGI.escape send(param)
     end
   end
 end
