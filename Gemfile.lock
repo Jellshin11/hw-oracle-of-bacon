@@ -25,6 +25,8 @@ GEM
     minitest (5.11.3)
     nokogiri (1.8.5)
       mini_portile2 (~> 2.3.0)
+    nokogiri (1.8.5-x64-mingw32)
+      mini_portile2 (~> 2.3.0)
     rspec (3.3.0)
       rspec-core (~> 3.3.0)
       rspec-expectations (~> 3.3.0)
@@ -49,6 +51,7 @@ GEM
 
 PLATFORMS
   ruby
+  x64-mingw32
 
 DEPENDENCIES
   activemodel (= 4.2.10)
@@ -60,7 +63,7 @@ DEPENDENCIES
   rspec-its
 
 RUBY VERSION
-   ruby 2.4.0p0
+   ruby 2.5.3p105
 
 BUNDLED WITH
-   1.16.0
+   1.17.1
