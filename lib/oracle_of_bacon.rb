@@ -34,7 +34,7 @@ class OracleOfBacon
     errors.add(:to,'from no puede ser igual a to') if from == to 
   end
 
-  def initialize(api_key='')
+  def initialize(api_key='38b99ce9ec87')
     @api_key = api_key
     @from = DEFAULT_CONNECTION
     @to= DEFAULT_CONNECTION
@@ -109,7 +109,7 @@ class OracleOfBacon
 
   private
 
-  # Scapes all params passed to Oracle of Bacon service
+  
   %w[api_key from to].each do |param|
     define_method "scaped_#{param}" do
       CGI.escape send(param)
